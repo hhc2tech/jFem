@@ -3,7 +3,7 @@
 """
 Created on Wed Jun 21 14:01:26 2018
 Try to write a simple msh file for MOOSE
-@author: Y. Bai
+@author: walkandthinker
 """
 import os 
 import shutil
