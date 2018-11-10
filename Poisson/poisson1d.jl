@@ -131,14 +131,12 @@ function FormKR(NodeCoords,Conn,c)
     localK=zeros(nNodesPerElmt,nNodesPerElmt)
     localR=zeros(nNodesPerElmt)
 
-
     ngp=3
     gs=GaussPoint(ngp)
 
     for e=1:nElmts
         elConn=Conn[e,:]
         Coords=NodeCoords[elConn]
-
         #############################################
         ### Do gauss integration on local element ###
         #############################################
@@ -174,10 +172,9 @@ end
 ################################################
 function DirichletBC(K,F,PhiL)
     # for the left node(1-st node), phi=PhiL
-    K[:,1].=0.0
     K[1,:].=0.0
     K[1,1]=1.0
-    F[1]=PhiL
+    F[1]=PhiL*1.0
     #return K,F
 end
 
@@ -200,13 +197,13 @@ end
 ########################################
 ### Mesh parameters
 ########################################
-ne=10;xmin=0.0;xmax=1.0;P=2
+ne=250;xmin=0.0;xmax=1.0;P=3
 
 ################################################
 ### Boundary and governing equation parameters
 ################################################
 PhiL=1.0
-c=0.5
+c=1.5
 
 
 @printf("************************************************************\n")
@@ -227,7 +224,15 @@ nNodes=size(NodeCoords,1)
 @time Phi=K\F
 @printf("***   Ax=F is solved!                                    ***\n")
 @printf("***   start filling analytical solution...               ***\n")
-@time sol=Analytical(NodeCoords,xmin,xmax,PhiL,c)
+@time  sol=Analytical(NodeCoords,xmin,xmax,PhiL,c)
 @printf("***   analytical solution is filled!                     ***\n")
 err=norm(Phi-sol)
 @printf("Abs Error=%12.6e,Rel Error=%12.6e\n",err,err/norm(sol))
+@printf("************************************************************\n")
+
+using Plots
+
+plot(NodeCoords,Phi,label="FEM")
+plot!(NodeCoords,sol,label="Analytical")
+xlabel!("ϕ")
+ylabel!("x")
